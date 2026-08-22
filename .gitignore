@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Data — never commit the database
+*.db
+*.sqlite3
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+
+# Env & editor
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+*.tsbuildinfo

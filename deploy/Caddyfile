@@ -1,0 +1,11 @@
+# Reached via Tailscale / Cloudflare Tunnel; TLS is terminated upstream,
+# so serve plain HTTP on :80 inside the compose network.
+:80 {
+	handle /api/* {
+		uri strip_prefix /api
+		reverse_proxy api:8000
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+}

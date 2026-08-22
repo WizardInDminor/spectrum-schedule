@@ -1,0 +1,17 @@
+{
+  "name": "Spectrum Schedule",
+  "short_name": "Schedule",
+  "description": "Family daily schedule and developmental tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f6f2",
+  "theme_color": "#2f6f5f",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

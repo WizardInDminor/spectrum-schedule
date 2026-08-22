@@ -1,0 +1,23 @@
+.badge {
+  margin: 0;
+  align-self: flex-start;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--muted);
+  font-size: 0.9rem;
+}
+
+.checking {
+  color: var(--muted);
+}
+
+.ok {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.error {
+  color: var(--err);
+  border-color: var(--err);
+}
