@@ -8,6 +8,7 @@ from sqlalchemy import select
 from app import models, schemas
 from app.deps import DB, CurrentUser, ParentUser, get_child_or_404, verify_csrf
 from app.event_types import RETRACTED_PAYLOAD, validate_payload
+from app.projections.resolve import resolve_corrections
 
 router = APIRouter(tags=["events"], dependencies=[Depends(verify_csrf)])
 
@@ -46,8 +47,12 @@ async def list_events(
     from_: Annotated[datetime | None, Query(alias="from")] = None,
     to: datetime | None = None,
     tag: str | None = None,
+    resolved: bool = False,
     limit: Annotated[int, Query(ge=1, le=1000)] = 200,
 ) -> list[models.Event]:
+    """Timeline. `resolved=true` collapses correction chains to their
+    effective heads (dropping retractions) — what the timeline screen shows;
+    the default raw stream keeps the full audit trail visible."""
     await get_child_or_404(child_id, db)
     query = (
         select(models.Event)
@@ -63,6 +68,10 @@ async def list_events(
         query = query.where(models.Event.occurred_at < to)
     result = await db.execute(query)
     events = list(result.scalars())
+    if resolved:
+        heads = resolve_corrections(events)
+        heads.sort(key=lambda e: (e.occurred_at, e.recorded_at), reverse=True)
+        events = heads
     if tag is not None:
         # JSON-array containment is dialect-specific; the stream is small, filter here
         events = [e for e in events if tag in (e.tags or [])]

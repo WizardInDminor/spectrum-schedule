@@ -167,6 +167,33 @@ class ScheduleItem(Base):
     transition_warning_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
 
+class Preference(Base):
+    """A preference *definition* (e.g. "crunchy textures", sensory_seeking,
+    category texture). Confidence is never stored — it is projected from
+    preference_evidence events with recency decay."""
+
+    __tablename__ = "preferences"
+    __table_args__ = (
+        CheckConstraint(
+            "kind IN ('like', 'dislike', 'sensory_seeking', 'sensory_avoiding')",
+            name="ck_preferences_kind",
+        ),
+        CheckConstraint(
+            "category IN ('food', 'sound', 'texture', 'activity', 'place', 'social', 'other')",
+            name="ck_preferences_category",
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    child_id: Mapped[str] = mapped_column(String(36), ForeignKey("children.id"), index=True)
+    kind: Mapped[str] = mapped_column(String(20))
+    category: Mapped[str] = mapped_column(String(20))
+    label: Mapped[str] = mapped_column(String(200))
+    context: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TZDateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(TZDateTime, default=utcnow, onupdate=utcnow)
+
+
 class Event(Base):
     """Append-only. No endpoint or migration may UPDATE or DELETE rows here;
     fixes are new rows pointing at the superseded one via corrects_event_id."""

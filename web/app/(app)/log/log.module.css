@@ -13,14 +13,96 @@
   color: var(--muted);
 }
 
+/* --- tile grid --- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 1.3rem 0.5rem;
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tile:active {
+  border-color: var(--accent);
+}
+
+.tileIcon {
+  font-size: 1.7rem;
+}
+
+.tileDisabled {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 1.3rem 0.5rem;
+  border: 1px dashed #cfccc3;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.tilePhase {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.links {
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.95rem;
+  padding: 0.5rem 0;
+}
+
+/* --- forms --- */
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.7rem;
   background: var(--surface);
   border: 1px solid #e0ddd5;
   border-radius: var(--radius);
   padding: 1rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.formRow > * {
+  flex: 1;
+}
+
+.fieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
 }
 
 .textarea,
@@ -32,12 +114,22 @@
   border-radius: var(--radius);
   background: #fff;
   color: var(--text);
+  min-width: 0;
 }
 
 .textarea:focus,
 .input:focus {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+.select {
+  font-size: 0.95rem;
+  padding: 0.55rem 0.5rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+  min-width: 0;
 }
 
 .primary {
@@ -55,40 +147,118 @@
   opacity: 0.5;
 }
 
+.secondary {
+  font-size: 0.95rem;
+  padding: 0.65rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
 .saved {
-  margin: 0;
+  margin: 0.8rem 0 0;
   color: var(--ok);
   font-weight: 600;
 }
 
-.later {
-  margin-top: 1.5rem;
-}
+/* --- rating scales --- */
 
-.laterGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.6rem;
-}
-
-.laterTile {
+.scale {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 1rem 0.5rem;
-  border: 1px dashed #cfccc3;
-  border-radius: var(--radius);
+  gap: 0.25rem;
+}
+
+.scaleLabel {
+  font-size: 0.85rem;
   color: var(--muted);
-  font-size: 0.9rem;
 }
 
-.laterIcon {
-  font-size: 1.5rem;
+.scaleButtons {
+  display: flex;
+  gap: 0.4rem;
 }
 
-.laterPhase {
+.scaleButton {
+  flex: 1;
+  padding: 0.7rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.scaleActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.scaleHints {
+  display: flex;
+  justify-content: space-between;
   font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+/* --- preference picker --- */
+
+.prefList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.prefOption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.prefSelected {
+  border-color: var(--accent);
+  border-width: 2px;
+}
+
+.prefMeta {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.evidenceYes,
+.evidenceNo {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.8rem 0.4rem;
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  cursor: pointer;
+}
+
+.evidenceYes {
+  background: var(--accent);
+}
+
+.evidenceNo {
+  background: #8a6d3b;
+}
+
+.evidenceYes:disabled,
+.evidenceNo:disabled {
+  opacity: 0.45;
 }

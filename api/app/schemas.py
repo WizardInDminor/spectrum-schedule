@@ -199,6 +199,43 @@ class ScheduleItemUpdate(ScheduleItemCreate):
     title: str | None = Field(default=None, min_length=1, max_length=200)  # type: ignore[assignment]
 
 
+# --- preferences ---
+
+PREFERENCE_KINDS = "^(like|dislike|sensory_seeking|sensory_avoiding)$"
+PREFERENCE_CATEGORIES = "^(food|sound|texture|activity|place|social|other)$"
+
+
+class ConfidenceOut(BaseModel):
+    score: float
+    label: str
+    evidence_count: int
+    last_observed: datetime | None
+
+
+class PreferenceOut(ORMModel):
+    id: str
+    child_id: str
+    kind: str
+    category: str
+    label: str
+    context: str | None
+    confidence: ConfidenceOut | None = None
+
+
+class PreferenceCreate(BaseModel):
+    kind: str = Field(pattern=PREFERENCE_KINDS)
+    category: str = Field(pattern=PREFERENCE_CATEGORIES)
+    label: str = Field(min_length=1, max_length=200)
+    context: str | None = None
+
+
+class PreferenceUpdate(BaseModel):
+    kind: str | None = Field(default=None, pattern=PREFERENCE_KINDS)
+    category: str | None = Field(default=None, pattern=PREFERENCE_CATEGORIES)
+    label: str | None = Field(default=None, min_length=1, max_length=200)
+    context: str | None = None
+
+
 # --- events ---
 
 

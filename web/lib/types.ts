@@ -69,6 +69,25 @@ export interface ScheduleEnvelope {
   default_template_id: string | null;
 }
 
+export type PreferenceKind = "like" | "dislike" | "sensory_seeking" | "sensory_avoiding";
+
+export interface PreferenceConfidence {
+  score: number;
+  label: "emerging" | "moderate" | "strong" | "mixed";
+  evidence_count: number;
+  last_observed: string | null;
+}
+
+export interface Preference {
+  id: string;
+  child_id: string;
+  kind: PreferenceKind;
+  category: string;
+  label: string;
+  context: string | null;
+  confidence: PreferenceConfidence | null;
+}
+
 export interface EventOut {
   id: string;
   child_id: string;

@@ -1,0 +1,171 @@
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.heading {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.linkButton {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  padding: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.formRow > * {
+  flex: 1;
+}
+
+.input {
+  font-size: 1rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+  min-width: 0;
+}
+
+.select {
+  font-size: 0.95rem;
+  padding: 0.55rem 0.5rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+  min-width: 0;
+}
+
+.primary {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.7rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.row {
+  background: var(--surface);
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.rowTop {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.rowKind {
+  font-size: 1.3rem;
+}
+
+.rowText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rowLabel {
+  font-weight: 600;
+}
+
+.rowMeta {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.rowActions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.evidenceButton {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.1rem;
+  border: 1px solid #cfccc3;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+}
+
+.evidenceButton:disabled {
+  opacity: 0.45;
+}
+
+.confidence {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.confidenceTrack {
+  flex: 1;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: #eceae4;
+  overflow: hidden;
+}
+
+.confidenceFill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.confidenceNegative {
+  background: #b3742a;
+}
+
+.confidenceLabel {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
