@@ -1,9 +1,30 @@
+interface ValidationItem {
+  loc?: (string | number)[];
+  msg?: string;
+}
+
+/** Turn a FastAPI error detail into something a form can show a human. */
+function detailToMessage(status: number, detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const parts = (detail as ValidationItem[])
+      .map((item) => {
+        const field = item.loc?.filter((p) => p !== "body").join(".");
+        const msg = item.msg?.replace(/^Value error, /, "") ?? "invalid value";
+        return field ? `${field}: ${msg}` : msg;
+      })
+      .filter(Boolean);
+    if (parts.length > 0) return parts.join("; ");
+  }
+  return `Request failed (${status})`;
+}
+
 export class ApiError extends Error {
   status: number;
   detail: unknown;
 
   constructor(status: number, detail: unknown) {
-    super(typeof detail === "string" ? detail : `Request failed (${status})`);
+    super(detailToMessage(status, detail));
     this.status = status;
     this.detail = detail;
   }
