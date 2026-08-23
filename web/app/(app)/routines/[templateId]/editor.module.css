@@ -48,6 +48,43 @@
   gap: 0.5rem;
 }
 
+.stepWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius);
+  background: #f2f7f5;
+}
+
+.secondary {
+  font-size: 0.95rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.danger {
+  font-size: 0.95rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--err);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--err);
+  cursor: pointer;
+  margin-left: auto;
+}
+
 .step {
   display: flex;
   align-items: center;

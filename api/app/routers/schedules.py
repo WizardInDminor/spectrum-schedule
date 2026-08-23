@@ -201,15 +201,18 @@ async def update_item(
         others.insert(target, item)
         for index, ordered in enumerate(others):
             ordered.position = index
+    # model_fields_set distinguishes "omitted" from "explicitly null" so that
+    # nullable fields (icon, time, durations) can be cleared while dialing in
+    provided = body.model_fields_set
     if body.title is not None:
         item.title = body.title
-    if body.icon is not None:
+    if "icon" in provided:
         item.icon = body.icon
-    if body.planned_start is not None:
+    if "planned_start" in provided:
         item.planned_start = body.planned_start
-    if body.duration_minutes is not None:
+    if "duration_minutes" in provided:
         item.duration_minutes = body.duration_minutes
-    if body.transition_warning_minutes is not None:
+    if "transition_warning_minutes" in provided:
         item.transition_warning_minutes = body.transition_warning_minutes
     await db.commit()
     schedule = await _load_schedule(db, schedule.child_id, schedule.schedule_date)

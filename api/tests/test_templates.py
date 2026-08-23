@@ -99,3 +99,38 @@ async def test_weekday_defaults_reject_foreign_template(client, parent_headers, 
         json={"defaults": {"0": "not-a-template"}},
     )
     assert response.status_code == 422
+
+
+async def test_step_edit_in_place_and_clear_fields(client, parent_headers, child):
+    template = await make_template(client, parent_headers, child.id)
+    body = await add_step(
+        client,
+        parent_headers,
+        template["id"],
+        "Breakfast",
+        icon="🥣",
+        duration_minutes=20,
+        transition_warning_minutes=5,
+    )
+    step = body["steps"][0]
+
+    edited = await client.patch(
+        f"/v1/steps/{step['id']}",
+        headers=parent_headers,
+        json={"title": "Big breakfast", "duration_minutes": 30},
+    )
+    updated = edited.json()["steps"][0]
+    assert updated["title"] == "Big breakfast"
+    assert updated["duration_minutes"] == 30
+    assert updated["transition_warning_minutes"] == 5  # omitted → untouched
+
+    cleared = await client.patch(
+        f"/v1/steps/{step['id']}",
+        headers=parent_headers,
+        json={"duration_minutes": None, "transition_warning_minutes": None, "icon": None},
+    )
+    updated = cleared.json()["steps"][0]
+    assert updated["duration_minutes"] is None  # explicit null → cleared
+    assert updated["transition_warning_minutes"] is None
+    assert updated["icon"] is None
+    assert updated["title"] == "Big breakfast"

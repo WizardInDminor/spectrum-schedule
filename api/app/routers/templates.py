@@ -108,15 +108,18 @@ async def update_step(
         others.insert(target, step)
         for index, ordered in enumerate(others):
             ordered.position = index
+    # model_fields_set distinguishes "omitted" from "explicitly null" so that
+    # nullable fields (icon, durations, notes) can be cleared while dialing in
+    provided = body.model_fields_set
     if body.title is not None:
         step.title = body.title
-    if body.icon is not None:
+    if "icon" in provided:
         step.icon = body.icon
-    if body.duration_minutes is not None:
+    if "duration_minutes" in provided:
         step.duration_minutes = body.duration_minutes
-    if body.transition_warning_minutes is not None:
+    if "transition_warning_minutes" in provided:
         step.transition_warning_minutes = body.transition_warning_minutes
-    if body.notes is not None:
+    if "notes" in provided:
         step.notes = body.notes
     await db.commit()
     return await _get_template(db, step.template_id)

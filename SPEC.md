@@ -404,6 +404,12 @@ Each phase lands as migrations + API + tests + UI, deployable at every phase bou
   overrides, the event table + `schedule_item_completed`/`skipped`/`note_added` +
   corrections, today-screen and template editor UI, PWA manifest. Docker Compose
   deployable.
+- **Phase 1.5 — schedule design polish** (added after Phase 1 review: schedule
+  *design* is a first-class activity while the family dials in the day). In-place
+  step editing in the template editor, day-of editing on the Today screen (add /
+  edit / remove items), PATCH semantics that let nullable fields be cleared with
+  explicit nulls, and a `seed-starter` CLI command that loads editable School Day /
+  Home Day starter templates.
 - **Phase 2 — IEP goals.** Goals & objectives CRUD, `trial_recorded` events, all five
   measurement types, progress projections, goal list + goal progress screens, trial
   quick-log.

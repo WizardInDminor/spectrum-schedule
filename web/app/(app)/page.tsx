@@ -18,6 +18,22 @@ interface Toast {
   undoEventId: string | null;
 }
 
+interface ItemDraft {
+  title: string;
+  planned_start: string; // "HH:MM" or ""
+  duration_minutes: string;
+  transition_warning_minutes: string;
+}
+
+function itemDraftFrom(item: ScheduleItem): ItemDraft {
+  return {
+    title: item.title,
+    planned_start: item.planned_start?.slice(0, 5) ?? "",
+    duration_minutes: item.duration_minutes?.toString() ?? "",
+    transition_warning_minutes: item.transition_warning_minutes?.toString() ?? "",
+  };
+}
+
 export default function TodayPage() {
   const { me, activeChild } = useApp();
   const isParent = me.role === "parent";
@@ -25,6 +41,10 @@ export default function TodayPage() {
   const [toast, setToast] = useState<Toast | null>(null);
   const [skipTarget, setSkipTarget] = useState<string | null>(null);
   const [skipReason, setSkipReason] = useState("");
+  const [editTarget, setEditTarget] = useState<string | null>(null);
+  const [itemDraft, setItemDraft] = useState<ItemDraft | null>(null);
+  const [newItemTitle, setNewItemTitle] = useState("");
+  const [newItemTime, setNewItemTime] = useState("");
   const [nowMinutes, setNowMinutes] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -136,6 +156,59 @@ export default function TodayPage() {
     }
   }
 
+  async function saveItemEdit(itemId: string) {
+    if (!itemDraft || !itemDraft.title.trim() || busy) return;
+    setBusy(true);
+    try {
+      // empty inputs are sent as explicit nulls so the API clears the field
+      await api(`/schedule-items/${itemId}`, {
+        method: "PATCH",
+        body: {
+          title: itemDraft.title.trim(),
+          planned_start: itemDraft.planned_start || null,
+          duration_minutes: itemDraft.duration_minutes
+            ? Number(itemDraft.duration_minutes)
+            : null,
+          transition_warning_minutes: itemDraft.transition_warning_minutes
+            ? Number(itemDraft.transition_warning_minutes)
+            : null,
+        },
+      });
+      setEditTarget(null);
+      await reload();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function deleteItem(itemId: string) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await api(`/schedule-items/${itemId}`, { method: "DELETE" });
+      setEditTarget(null);
+      await reload();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function addItem(e: React.FormEvent) {
+    e.preventDefault();
+    if (!schedule || !newItemTitle.trim() || busy) return;
+    setBusy(true);
+    try {
+      const body: Record<string, unknown> = { title: newItemTitle.trim() };
+      if (newItemTime) body.planned_start = newItemTime;
+      await api(`/schedules/${schedule.id}/items`, { method: "POST", body });
+      setNewItemTitle("");
+      setNewItemTime("");
+      await reload();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div>
       <header className={styles.header}>
@@ -217,9 +290,94 @@ export default function TodayPage() {
                       >
                         Skip
                       </button>
+                      <button
+                        className={styles.editButton}
+                        disabled={busy}
+                        onClick={() => {
+                          if (editTarget === item.id) {
+                            setEditTarget(null);
+                          } else {
+                            setEditTarget(item.id);
+                            setItemDraft(itemDraftFrom(item));
+                            setSkipTarget(null);
+                          }
+                        }}
+                        aria-label={`Edit ${item.title}`}
+                      >
+                        ✎
+                      </button>
                     </div>
                   )}
                 </div>
+                {editTarget === item.id && itemDraft && (
+                  <div className={styles.editForm}>
+                    <input
+                      className={styles.skipInput}
+                      value={itemDraft.title}
+                      onChange={(e) => setItemDraft({ ...itemDraft, title: e.target.value })}
+                      aria-label="Item title"
+                    />
+                    <div className={styles.editRow}>
+                      <input
+                        className={styles.editField}
+                        type="time"
+                        value={itemDraft.planned_start}
+                        onChange={(e) =>
+                          setItemDraft({ ...itemDraft, planned_start: e.target.value })
+                        }
+                        aria-label="Planned start time"
+                      />
+                      <input
+                        className={styles.editField}
+                        type="number"
+                        min={1}
+                        placeholder="Minutes"
+                        value={itemDraft.duration_minutes}
+                        onChange={(e) =>
+                          setItemDraft({ ...itemDraft, duration_minutes: e.target.value })
+                        }
+                        aria-label="Duration in minutes"
+                      />
+                      <input
+                        className={styles.editField}
+                        type="number"
+                        min={1}
+                        placeholder="Warn"
+                        value={itemDraft.transition_warning_minutes}
+                        onChange={(e) =>
+                          setItemDraft({
+                            ...itemDraft,
+                            transition_warning_minutes: e.target.value,
+                          })
+                        }
+                        aria-label="Transition warning minutes"
+                      />
+                    </div>
+                    <div className={styles.editRow}>
+                      <button
+                        className={styles.skipConfirm}
+                        disabled={busy || !itemDraft.title.trim()}
+                        onClick={() => saveItemEdit(item.id)}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className={styles.editCancel}
+                        disabled={busy}
+                        onClick={() => setEditTarget(null)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className={styles.editDelete}
+                        disabled={busy}
+                        onClick={() => deleteItem(item.id)}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {skipTarget === item.id && (
                   <div className={styles.skipForm}>
                     <input
@@ -246,6 +404,31 @@ export default function TodayPage() {
               </li>
             ))}
           </ul>
+
+          {isParent && (
+            <form className={styles.addItemForm} onSubmit={addItem}>
+              <input
+                className={styles.skipInput}
+                placeholder="Add to today (dentist, errand…)"
+                value={newItemTitle}
+                onChange={(e) => setNewItemTitle(e.target.value)}
+              />
+              <input
+                className={styles.addItemTime}
+                type="time"
+                value={newItemTime}
+                onChange={(e) => setNewItemTime(e.target.value)}
+                aria-label="Planned start time (optional)"
+              />
+              <button
+                className={styles.skipConfirm}
+                type="submit"
+                disabled={busy || !newItemTitle.trim()}
+              >
+                Add
+              </button>
+            </form>
+          )}
 
           {finished.length > 0 && (
             <section>

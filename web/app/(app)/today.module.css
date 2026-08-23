@@ -164,6 +164,75 @@
   cursor: pointer;
 }
 
+.editButton {
+  border: 1px solid #cfccc3;
+  background: none;
+  color: var(--muted);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.6rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed #cfccc3;
+}
+
+.editRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editField {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.9rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+}
+
+.editCancel {
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.editDelete {
+  border: 1px solid var(--err);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--err);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.addItemForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.addItemTime {
+  width: 6.2rem;
+  padding: 0.5rem 0.4rem;
+  font-size: 0.9rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
 .slimRow {
   display: flex;
   align-items: center;

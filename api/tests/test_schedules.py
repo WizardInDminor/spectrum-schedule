@@ -132,3 +132,24 @@ async def test_schedule_reflects_completion_events(client, parent_headers, child
     status = got.json()["schedule"]["items"][0]["item_status"]
     assert status["status"] == "done"
     assert status["event_id"] == event.json()["id"]
+
+
+async def test_item_fields_clear_with_explicit_null(client, parent_headers, child):
+    body = await generate(client, parent_headers, child.id)
+    schedule_id = body["schedule"]["id"]
+    added = await client.post(
+        f"/v1/schedules/{schedule_id}/items",
+        headers=parent_headers,
+        json={"title": "Nap", "planned_start": "13:00:00", "duration_minutes": 60},
+    )
+    item = added.json()["items"][0]
+
+    cleared = await client.patch(
+        f"/v1/schedule-items/{item['id']}",
+        headers=parent_headers,
+        json={"planned_start": None, "duration_minutes": None},
+    )
+    updated = cleared.json()["items"][0]
+    assert updated["planned_start"] is None
+    assert updated["duration_minutes"] is None
+    assert updated["title"] == "Nap"
