@@ -1,0 +1,154 @@
+.back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.heading {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.titleInput {
+  display: block;
+  width: 100%;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+  border: none;
+  background: none;
+  border-bottom: 2px dashed transparent;
+  margin-bottom: 1rem;
+  padding: 0.1rem 0;
+}
+
+.titleInput:focus {
+  outline: none;
+  border-bottom-color: var(--accent);
+}
+
+.subheading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.steps {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: var(--surface);
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+}
+
+.stepIcon {
+  font-size: 1.4rem;
+}
+
+.stepText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stepTitle {
+  font-weight: 600;
+}
+
+.stepMeta {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.stepActions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.iconButton {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid #cfccc3;
+  background: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--text);
+}
+
+.iconButton:disabled {
+  opacity: 0.35;
+}
+
+.addForm {
+  background: var(--surface);
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.addRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  font-size: 1rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+}
+
+.iconInput {
+  width: 3.2rem;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 0.55rem 0.3rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+}
+
+.numInput {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.95rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+}
+
+.primary {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+}

@@ -1,0 +1,124 @@
+.heading {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  color: var(--accent);
+}
+
+.subheading {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.section {
+  margin-bottom: 1.75rem;
+}
+
+.accountRow {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.list {
+  list-style: none;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: var(--surface);
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+}
+
+.rowName {
+  flex: 1;
+  font-weight: 600;
+}
+
+.rowMeta {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--surface);
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  padding: 0.9rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+}
+
+.select {
+  font-size: 0.95rem;
+  padding: 0.55rem 0.5rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.primary {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.65rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+}
+
+.secondary {
+  font-size: 0.95rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.linkButton {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.error {
+  color: var(--err);
+}

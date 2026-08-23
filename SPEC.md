@@ -5,7 +5,8 @@ linked jobs: a visual **daily schedule** built from routine templates, and a
 **developmental record** (IEP goals with measurable trials, preferences, observations,
 ABC incidents) that surfaces trends and produces IEP-meeting-ready summaries.
 
-Status: **draft — awaiting review before Phase 1 begins.**
+Status: **approved 2026-08-23 — Phase 1 in progress.** Review outcomes are recorded in
+[§7 Decisions](#7-decisions-review-outcomes).
 
 ---
 
@@ -141,6 +142,8 @@ erDiagram
     CHILD ||--o{ REPORT : has
     ROUTINE_TEMPLATE ||--o{ ROUTINE_STEP : "ordered steps"
     ROUTINE_TEMPLATE ||--o{ DAILY_SCHEDULE : "generates"
+    CHILD ||--o{ WEEKDAY_DEFAULT : "per-weekday default template"
+    ROUTINE_TEMPLATE ||--o{ WEEKDAY_DEFAULT : "is default for"
     DAILY_SCHEDULE ||--o{ SCHEDULE_ITEM : contains
     ROUTINE_STEP ||--o{ SCHEDULE_ITEM : "source of (nullable)"
     IEP_GOAL ||--o{ OBJECTIVE : "ordered objectives"
@@ -174,6 +177,12 @@ erDiagram
         string name "e.g. School Morning"
         boolean is_active
         datetime created_at
+    }
+    WEEKDAY_DEFAULT {
+        string id PK
+        string child_id FK
+        int weekday "0=Mon ... 6=Sun (ISO)"
+        string template_id FK
     }
     ROUTINE_STEP {
         string id PK
@@ -287,10 +296,10 @@ rewrites `/api/*` to the API service). JSON only. Session cookie auth (`HttpOnly
 
 - **parent** — full access: manage users, children, templates, goals; log anything;
   generate reports; correct anyone's events.
-- **caregiver** — day-to-day access: read schedules/goals/preferences, log events
-  (completions, trials, observations, incidents, preference evidence, notes), correct
-  **their own** events. Cannot manage users, children, templates, goal definitions, or
-  generate/read reports.
+- **caregiver** — **read-only** (decision #3): can view schedules, goals, and
+  preferences, but cannot log events, correct anything, manage any definitions, or
+  read reports/trends. This is a light courtesy surface for occasional third users
+  (e.g. grandparents later); the family logs everything as parents.
 
 | method & path | purpose | parent | caregiver |
 |---|---|---|---|
@@ -308,12 +317,13 @@ rewrites `/api/*` to the API service). JSON only. Session cookie auth (`HttpOnly
 | `POST /children/{id}/templates` · `PATCH /templates/{id}` · steps CRUD | manage | ✓ | — |
 | **daily schedules** |
 | `GET /children/{id}/schedule?date=` | schedule + per-item status (projection) | ✓ | ✓ |
-| `POST /children/{id}/schedule` | generate for a date from a template | ✓ | ✓ |
-| `PATCH /schedule-items/{id}` · `POST …/items` | per-day overrides, ad-hoc items | ✓ | ✓ |
+| `POST /children/{id}/schedule` | generate for a date (explicit or weekday-default template) | ✓ | — |
+| `PATCH /schedule-items/{id}` · `POST …/items` | per-day overrides, ad-hoc items | ✓ | — |
+| `PUT /children/{id}/weekday-defaults` | map weekdays → default templates | ✓ | — |
 | **events** |
-| `POST /children/{id}/events` | append event (any type; payload validated) | ✓ | ✓ |
+| `POST /children/{id}/events` | append event (any type; payload validated) | ✓ | — |
 | `GET /children/{id}/events?type=&from=&to=&tag=` | filtered timeline | ✓ | ✓ |
-| `POST /events/{id}/correct` | append correction event | ✓ | own only |
+| `POST /events/{id}/correct` | append correction event | ✓ | — |
 | **goals** (Phase 2) |
 | `GET /children/{id}/goals` | goals + objectives + progress projection | ✓ | ✓ |
 | `POST /children/{id}/goals` · `PATCH /goals/{id}` · objectives CRUD | manage | ✓ | — |
@@ -388,10 +398,12 @@ IEP report says.
 
 Each phase lands as migrations + API + tests + UI, deployable at every phase boundary.
 
-- **Phase 1 — Foundation.** Auth (sessions, roles, user management), children CRUD,
-  routine templates & steps, daily schedule generation with per-day overrides, the
-  event table + `schedule_item_completed`/`skipped`/`note_added` + corrections,
-  today-screen and template editor UI, PWA manifest. Docker Compose deployable.
+- **Phase 1 — Foundation.** Auth (sessions, roles, user management, CLI bootstrap of
+  the first parent account), children CRUD, routine templates & steps, per-weekday
+  default templates, daily schedule generation with one-tap regenerate and per-day
+  overrides, the event table + `schedule_item_completed`/`skipped`/`note_added` +
+  corrections, today-screen and template editor UI, PWA manifest. Docker Compose
+  deployable.
 - **Phase 2 — IEP goals.** Goals & objectives CRUD, `trial_recorded` events, all five
   measurement types, progress projections, goal list + goal progress screens, trial
   quick-log.
@@ -399,33 +411,35 @@ Each phase lands as migrations + API + tests + UI, deployable at every phase bou
   ABC incidents, full quick-log hub, event timeline screen.
 - **Phase 4 — Insight.** Trend projections (mood/regulation/sleep lines, incident
   patterns, routine adherence), report generation & snapshot storage, print stylesheet,
-  `projection_cache`, offline quick-log queueing (evaluate).
+  `projection_cache`, an authenticated full-export endpoint (JSON dump) to complement
+  host-level backups, offline quick-log queueing (evaluate).
 - **Phase 5 — Child-facing view (deferred).** Read-only visual schedule with big icons,
   first–then focus mode, no ability to see the developmental record. Not designed
   beyond the data-model accommodations above.
 
 ---
 
-## 7. Open questions (answers needed before Phase 1)
+## 7. Decisions (review outcomes)
 
-1. **Timezone:** one home timezone per child (schedules interpreted in it) — is a
-   single-timezone assumption fine, or do you split time between households?
-2. **Prompt levels:** which hierarchy for `prompt_level` trials? Proposed default:
-   independent → gestural → verbal → modeled → partial physical → full physical.
-   Should match the school's IEP wording.
-3. **Caregiver visibility:** the table above hides reports/trends and user/child/goal
-   management from caregivers but shows goals, preferences, and the timeline. Right
-   line? Should caregivers see incident history, or only log into it?
-4. **Schedule generation:** auto-generate each day from a default template (per
-   weekday?) with manual override, or always explicit "start today from template X"?
-   Proposed: per-weekday default template with one-tap regenerate.
-5. **Transition warnings:** in-app visual banner only, or also push notifications
-   (needs web-push infrastructure — real work, would land Phase 4)?
-6. **Account bootstrap:** first parent account created via CLI command on the server
-   (proposed), or a one-time setup page?
-7. **Report format:** is print-CSS (browser print-to-PDF) sufficient for IEP meetings,
-   or is server-side PDF generation required?
-8. **Backups:** out of app scope (host-level SQLite file copy), or do you want an
-   authenticated export endpoint (full JSON/SQLite dump) in Phase 1?
-9. **Multiple children:** confirmed as supported — is a simple global child-switcher in
-   the header sufficient (no per-user child restrictions)?
+Answers from the 2026-08-23 spec review; each is binding for the phases that follow.
+
+1. **Timezone** — single household, one home timezone per child. Schedules are
+   interpreted in the child's IANA timezone; no split-household handling.
+2. **Prompt levels** — the proposed hierarchy stands: independent → gestural → verbal
+   → modeled → partial physical → full physical.
+3. **Caregiver role** — read-only. The family (parents) does all logging; `caregiver`
+   is a light viewing surface for possible future third users (e.g. grandparents).
+   Role definitions in §4 reflect this.
+4. **Schedule generation** — per-weekday default template with one-tap regenerate and
+   per-day manual overrides (`WEEKDAY_DEFAULT` in the data model).
+5. **Transition warnings** — in-app visual banner only; physical visual timers cover
+   real-world cues. No web-push infrastructure.
+6. **Account bootstrap** — first parent account is created with a CLI command on the
+   server (`uv run python -m app.cli create-parent`).
+7. **Reports** — print-CSS (browser print-to-PDF) is sufficient; no server-side PDF
+   generation.
+8. **Backups** — primary strategy is host-level (copy the SQLite file / volume);
+   an authenticated full-export endpoint lands in Phase 4 as a complement.
+9. **Multiple children** — schema keeps multi-child support, UX assumes a single
+   child: the header switcher appears only when more than one child exists. Low
+   priority.
