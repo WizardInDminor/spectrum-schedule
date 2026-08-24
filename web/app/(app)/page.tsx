@@ -268,6 +268,17 @@ export default function TodayPage() {
                       {item.planned_start && formatTime(item.planned_start)}
                       {item.planned_start && item.duration_minutes && " · "}
                       {item.duration_minutes && `${item.duration_minutes} min`}
+                      {item.activity_id && (
+                        <>
+                          {(item.planned_start || item.duration_minutes) && " · "}
+                          <Link
+                            href={`/activities/${item.activity_id}`}
+                            className={styles.activityLink}
+                          >
+                            📖 how-to
+                          </Link>
+                        </>
+                      )}
                     </span>
                   </div>
                   {isParent && (

@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
-import type { EventOut, Preference } from "@/lib/types";
+import type { Activity, EventOut, Preference } from "@/lib/types";
 import styles from "./timeline.module.css";
 
 const FILTERS: { key: string; label: string; types: string[] | null }[] = [
   { key: "all", label: "All", types: null },
   { key: "schedule", label: "Schedule", types: ["schedule_item_completed", "schedule_item_skipped"] },
+  { key: "activities", label: "Activities", types: ["activity_run"] },
   { key: "observations", label: "Observations", types: ["observation_recorded"] },
   { key: "incidents", label: "Incidents", types: ["incident_recorded"] },
   { key: "preferences", label: "Preferences", types: ["preference_evidence"] },
@@ -27,6 +28,8 @@ function eventIcon(type: string): string {
       return "⚡";
     case "preference_evidence":
       return "❤️";
+    case "activity_run":
+      return "🎲";
     default:
       return "📝";
   }
@@ -36,16 +39,19 @@ export default function TimelinePage() {
   const { activeChild } = useApp();
   const [events, setEvents] = useState<EventOut[] | null>(null);
   const [preferences, setPreferences] = useState<Preference[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [filter, setFilter] = useState("all");
 
   const reload = useCallback(async () => {
     if (!activeChild) return;
-    const [eventList, preferenceList] = await Promise.all([
+    const [eventList, preferenceList, activityList] = await Promise.all([
       api<EventOut[]>(`/children/${activeChild.id}/events?resolved=true&limit=300`),
       api<Preference[]>(`/children/${activeChild.id}/preferences`),
+      api<Activity[]>(`/children/${activeChild.id}/activities?include_archived=true`),
     ]);
     setEvents(eventList);
     setPreferences(preferenceList);
+    setActivities(activityList);
   }, [activeChild]);
 
   useEffect(() => {
@@ -55,6 +61,10 @@ export default function TimelinePage() {
   const preferenceLabels = useMemo(
     () => Object.fromEntries(preferences.map((p) => [p.id, p.label])),
     [preferences],
+  );
+  const activityTitles = useMemo(
+    () => Object.fromEntries(activities.map((a) => [a.id, a.title])),
+    [activities],
   );
 
   const visible = useMemo(() => {
@@ -102,6 +112,14 @@ export default function TimelinePage() {
         const label = preferenceLabels[String(p.preference_id)] ?? "a preference";
         const verb = p.direction === 1 ? "confirmed" : "contradicted";
         return `${verb} “${label}”${p.note ? ` — ${p.note}` : ""}`;
+      }
+      case "activity_run": {
+        const title = activityTitles[String(p.activity_id)] ?? "an activity";
+        const parts = [`Played “${title}”`];
+        if (p.context) parts.push(`at ${p.context}`);
+        if (p.rating != null) parts.push(`went ${p.rating}/5`);
+        if (p.note) parts.push(String(p.note));
+        return parts.join(" · ");
       }
       case "note_added":
         return String(p.text ?? "Note");

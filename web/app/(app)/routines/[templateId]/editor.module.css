@@ -189,3 +189,11 @@
 .primary:disabled {
   opacity: 0.5;
 }
+
+.activitySelect {
+  font-size: 0.95rem;
+  padding: 0.55rem 0.5rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+}

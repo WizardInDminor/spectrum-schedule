@@ -23,6 +23,20 @@ export interface RoutineStep {
   duration_minutes: number | null;
   transition_warning_minutes: number | null;
   notes: string | null;
+  activity_id: string | null;
+}
+
+export interface Activity {
+  id: string;
+  child_id: string;
+  title: string;
+  icon: string | null;
+  description: string | null;
+  materials: string | null;
+  skill_tags: string[];
+  context_tags: string[];
+  duration_minutes: number | null;
+  is_archived: boolean;
 }
 
 export interface RoutineTemplate {
@@ -53,6 +67,7 @@ export interface ScheduleItem {
   planned_start: string | null; // "HH:MM:SS", child-local
   duration_minutes: number | null;
   transition_warning_minutes: number | null;
+  activity_id: string | null;
   item_status: ItemStatus | null;
 }
 

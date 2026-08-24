@@ -115,6 +115,9 @@ class RoutineStep(Base):
     duration_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
     transition_warning_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    activity_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("activities.id"), nullable=True
+    )
 
 
 class WeekdayDefault(Base):
@@ -165,6 +168,31 @@ class ScheduleItem(Base):
     planned_start: Mapped[time | None] = mapped_column(Time, nullable=True)  # child-local
     duration_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
     transition_warning_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    activity_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("activities.id"), nullable=True
+    )
+
+
+class Activity(Base):
+    """A designed, reusable activity: the documented 'how' (a game, an
+    exercise, a coping routine) that can be linked into routine steps and
+    schedule items, pulled from the stash by context, and logged as
+    activity_run events when used."""
+
+    __tablename__ = "activities"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    child_id: Mapped[str] = mapped_column(String(36), ForeignKey("children.id"), index=True)
+    title: Mapped[str] = mapped_column(String(200))
+    icon: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)  # setup, rules, variations
+    materials: Mapped[str | None] = mapped_column(Text, nullable=True)
+    skill_tags: Mapped[list] = mapped_column(JSON, default=list)  # attention, counting, …
+    context_tags: Mapped[list] = mapped_column(JSON, default=list)  # grandparents, car, …
+    duration_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    is_archived: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(TZDateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(TZDateTime, default=utcnow, onupdate=utcnow)
 
 
 class Preference(Base):

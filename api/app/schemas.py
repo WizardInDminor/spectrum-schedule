@@ -90,6 +90,7 @@ class StepOut(ORMModel):
     duration_minutes: int | None
     transition_warning_minutes: int | None
     notes: str | None
+    activity_id: str | None
 
 
 class StepCreate(BaseModel):
@@ -98,6 +99,7 @@ class StepCreate(BaseModel):
     duration_minutes: int | None = Field(default=None, ge=1, le=24 * 60)
     transition_warning_minutes: int | None = Field(default=None, ge=1, le=120)
     notes: str | None = None
+    activity_id: str | None = None
     position: int | None = Field(default=None, ge=0)
 
 
@@ -107,6 +109,7 @@ class StepUpdate(BaseModel):
     duration_minutes: int | None = Field(default=None, ge=1, le=24 * 60)
     transition_warning_minutes: int | None = Field(default=None, ge=1, le=120)
     notes: str | None = None
+    activity_id: str | None = None
     position: int | None = Field(default=None, ge=0)
 
 
@@ -155,6 +158,7 @@ class ScheduleItemOut(ORMModel):
     planned_start: time | None
     duration_minutes: int | None
     transition_warning_minutes: int | None
+    activity_id: str | None
 
 
 class ItemStatusOut(BaseModel):
@@ -192,11 +196,49 @@ class ScheduleItemCreate(BaseModel):
     planned_start: time | None = None
     duration_minutes: int | None = Field(default=None, ge=1, le=24 * 60)
     transition_warning_minutes: int | None = Field(default=None, ge=1, le=120)
+    activity_id: str | None = None
     position: int | None = Field(default=None, ge=0)
 
 
 class ScheduleItemUpdate(ScheduleItemCreate):
     title: str | None = Field(default=None, min_length=1, max_length=200)  # type: ignore[assignment]
+
+
+# --- activities ---
+
+
+class ActivityOut(ORMModel):
+    id: str
+    child_id: str
+    title: str
+    icon: str | None
+    description: str | None
+    materials: str | None
+    skill_tags: list[str]
+    context_tags: list[str]
+    duration_minutes: int | None
+    is_archived: bool
+
+
+class ActivityCreate(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+    icon: str | None = Field(default=None, max_length=60)
+    description: str | None = None
+    materials: str | None = None
+    skill_tags: list[str] = Field(default_factory=list)
+    context_tags: list[str] = Field(default_factory=list)
+    duration_minutes: int | None = Field(default=None, ge=1, le=24 * 60)
+
+
+class ActivityUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=200)
+    icon: str | None = Field(default=None, max_length=60)
+    description: str | None = None
+    materials: str | None = None
+    skill_tags: list[str] | None = None
+    context_tags: list[str] | None = None
+    duration_minutes: int | None = Field(default=None, ge=1, le=24 * 60)
+    is_archived: bool | None = None
 
 
 # --- preferences ---

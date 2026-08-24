@@ -41,7 +41,11 @@ def run_migrations_offline() -> None:
 
 def do_run_migrations(connection: Connection) -> None:
     context.configure(
-        connection=connection, target_metadata=target_metadata, render_item=render_item
+        connection=connection,
+        target_metadata=target_metadata,
+        render_item=render_item,
+        # SQLite cannot ALTER constraints; batch mode rebuilds tables instead
+        render_as_batch=True,
     )
     with context.begin_transaction():
         context.run_migrations()

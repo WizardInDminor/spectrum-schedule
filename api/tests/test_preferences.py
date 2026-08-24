@@ -5,9 +5,7 @@ async def make_preference(client, headers, child_id: str, **overrides) -> dict:
         "label": "Crunchy textures",
         **overrides,
     }
-    response = await client.post(
-        f"/v1/children/{child_id}/preferences", headers=headers, json=body
-    )
+    response = await client.post(f"/v1/children/{child_id}/preferences", headers=headers, json=body)
     assert response.status_code == 201, response.text
     return response.json()
 

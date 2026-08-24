@@ -8,6 +8,7 @@ from sqlalchemy.orm import selectinload
 from app import models, schemas
 from app.deps import DB, CurrentUser, ParentUser, get_child_or_404, verify_csrf
 from app.projections.schedule_status import STATUS_EVENT_TYPES, schedule_item_statuses
+from app.routers.activities import get_activity_for_child_or_422
 
 router = APIRouter(tags=["schedules"], dependencies=[Depends(verify_csrf)])
 
@@ -131,6 +132,7 @@ async def generate_schedule(
                     icon=step.icon,
                     duration_minutes=step.duration_minutes,
                     transition_warning_minutes=step.transition_warning_minutes,
+                    activity_id=step.activity_id,
                 )
             )
     db.add(schedule)
@@ -157,6 +159,8 @@ async def add_item(
     if schedule is None:
         raise HTTPException(status_code=404, detail="Schedule not found")
 
+    if body.activity_id is not None:
+        await get_activity_for_child_or_422(db, body.activity_id, schedule.child_id)
     position = body.position if body.position is not None else len(schedule.items)
     for existing in schedule.items:
         if existing.position >= position:
@@ -169,6 +173,7 @@ async def add_item(
             planned_start=body.planned_start,
             duration_minutes=body.duration_minutes,
             transition_warning_minutes=body.transition_warning_minutes,
+            activity_id=body.activity_id,
         )
     )
     for index, item in enumerate(sorted(schedule.items, key=lambda i: i.position)):
@@ -214,6 +219,10 @@ async def update_item(
         item.duration_minutes = body.duration_minutes
     if "transition_warning_minutes" in provided:
         item.transition_warning_minutes = body.transition_warning_minutes
+    if "activity_id" in provided:
+        if body.activity_id is not None:
+            await get_activity_for_child_or_422(db, body.activity_id, schedule.child_id)
+        item.activity_id = body.activity_id
     await db.commit()
     schedule = await _load_schedule(db, schedule.child_id, schedule.schedule_date)
     assert schedule is not None

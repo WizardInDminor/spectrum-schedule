@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from app import models, schemas
 from app.deps import DB, CurrentUser, ParentUser, get_child_or_404, verify_csrf
+from app.routers.activities import get_activity_for_child_or_422
 
 router = APIRouter(tags=["templates"], dependencies=[Depends(verify_csrf)])
 
@@ -71,6 +72,8 @@ async def add_step(
     template_id: str, body: schemas.StepCreate, db: DB, _user: ParentUser
 ) -> models.RoutineTemplate:
     template = await _get_template(db, template_id)
+    if body.activity_id is not None:
+        await get_activity_for_child_or_422(db, body.activity_id, template.child_id)
     position = body.position if body.position is not None else len(template.steps)
     step = models.RoutineStep(
         template_id=template_id,
@@ -80,6 +83,7 @@ async def add_step(
         duration_minutes=body.duration_minutes,
         transition_warning_minutes=body.transition_warning_minutes,
         notes=body.notes,
+        activity_id=body.activity_id,
     )
     # shift steps at/after the requested slot, then renumber densely
     for existing in template.steps:
@@ -121,6 +125,10 @@ async def update_step(
         step.transition_warning_minutes = body.transition_warning_minutes
     if "notes" in provided:
         step.notes = body.notes
+    if "activity_id" in provided:
+        if body.activity_id is not None:
+            await get_activity_for_child_or_422(db, body.activity_id, template.child_id)
+        step.activity_id = body.activity_id
     await db.commit()
     return await _get_template(db, step.template_id)
 

@@ -53,9 +53,7 @@ def test_labels_scale_with_score():
     faded = preference_confidences(["p1"], [evidence("e1", "p1", 1, days_ago=200)], now=NOW)
     assert faded["p1"].label == "emerging"
 
-    strong = preference_confidences(
-        ["p1"], [evidence(f"e{i}", "p1", 1) for i in range(4)], now=NOW
-    )
+    strong = preference_confidences(["p1"], [evidence(f"e{i}", "p1", 1) for i in range(4)], now=NOW)
     assert strong["p1"].label == "strong"
 
 

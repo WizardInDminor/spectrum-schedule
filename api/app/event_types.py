@@ -62,6 +62,13 @@ class IncidentRecorded(_Payload):
     location: str | None = None
 
 
+class ActivityRun(_Payload):
+    activity_id: str
+    context: str | None = None
+    rating: int | None = Field(default=None, ge=1, le=5)  # how it went
+    note: str | None = None
+
+
 EVENT_PAYLOADS: dict[str, type[_Payload]] = {
     "schedule_item_completed": ScheduleItemCompleted,
     "schedule_item_skipped": ScheduleItemSkipped,
@@ -69,6 +76,7 @@ EVENT_PAYLOADS: dict[str, type[_Payload]] = {
     "preference_evidence": PreferenceEvidence,
     "observation_recorded": ObservationRecorded,
     "incident_recorded": IncidentRecorded,
+    "activity_run": ActivityRun,
 }
 
 RETRACTED_PAYLOAD = {"retracted": True}

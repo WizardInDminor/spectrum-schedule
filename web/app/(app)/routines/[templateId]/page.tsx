@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import { useApp } from "@/lib/app-context";
-import type { RoutineStep, RoutineTemplate } from "@/lib/types";
+import type { Activity, RoutineStep, RoutineTemplate } from "@/lib/types";
 import styles from "./editor.module.css";
 
 interface StepDraft {
@@ -13,6 +13,7 @@ interface StepDraft {
   icon: string;
   duration_minutes: string;
   transition_warning_minutes: string;
+  activity_id: string; // "" = no linked activity
 }
 
 const EMPTY_DRAFT: StepDraft = {
@@ -20,6 +21,7 @@ const EMPTY_DRAFT: StepDraft = {
   icon: "",
   duration_minutes: "",
   transition_warning_minutes: "",
+  activity_id: "",
 };
 
 function draftFrom(step: RoutineStep): StepDraft {
@@ -28,6 +30,7 @@ function draftFrom(step: RoutineStep): StepDraft {
     icon: step.icon ?? "",
     duration_minutes: step.duration_minutes?.toString() ?? "",
     transition_warning_minutes: step.transition_warning_minutes?.toString() ?? "",
+    activity_id: step.activity_id ?? "",
   };
 }
 
@@ -40,15 +43,18 @@ function draftToPatch(draft: StepDraft): Record<string, unknown> {
     transition_warning_minutes: draft.transition_warning_minutes
       ? Number(draft.transition_warning_minutes)
       : null,
+    activity_id: draft.activity_id || null,
   };
 }
 
 function DraftFields({
   draft,
   setDraft,
+  activities,
 }: {
   draft: StepDraft;
   setDraft: (d: StepDraft) => void;
+  activities: Activity[];
 }) {
   return (
     <>
@@ -91,6 +97,21 @@ function DraftFields({
           aria-label="Transition warning minutes"
         />
       </div>
+      {activities.length > 0 && (
+        <select
+          className={styles.activitySelect}
+          value={draft.activity_id}
+          onChange={(e) => setDraft({ ...draft, activity_id: e.target.value })}
+          aria-label="Linked activity"
+        >
+          <option value="">No linked activity</option>
+          {activities.map((activity) => (
+            <option key={activity.id} value={activity.id}>
+              {activity.icon ?? "🎲"} {activity.title}
+            </option>
+          ))}
+        </select>
+      )}
     </>
   );
 }
@@ -100,6 +121,7 @@ export default function TemplateEditorPage() {
   const { me, activeChild } = useApp();
   const isParent = me.role === "parent";
   const [template, setTemplate] = useState<RoutineTemplate | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [addDraft, setAddDraft] = useState<StepDraft>(EMPTY_DRAFT);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<StepDraft>(EMPTY_DRAFT);
@@ -107,8 +129,12 @@ export default function TemplateEditorPage() {
 
   const reload = useCallback(async () => {
     if (!activeChild) return;
-    const all = await api<RoutineTemplate[]>(`/children/${activeChild.id}/templates`);
+    const [all, activityList] = await Promise.all([
+      api<RoutineTemplate[]>(`/children/${activeChild.id}/templates`),
+      api<Activity[]>(`/children/${activeChild.id}/activities`),
+    ]);
     setTemplate(all.find((t) => t.id === templateId) ?? null);
+    setActivities(activityList);
   }, [activeChild, templateId]);
 
   useEffect(() => {
@@ -136,6 +162,7 @@ export default function TemplateEditorPage() {
     if (addDraft.duration_minutes) body.duration_minutes = Number(addDraft.duration_minutes);
     if (addDraft.transition_warning_minutes)
       body.transition_warning_minutes = Number(addDraft.transition_warning_minutes);
+    if (addDraft.activity_id) body.activity_id = addDraft.activity_id;
     await mutate(() =>
       api<RoutineTemplate>(`/templates/${templateId}/steps`, { method: "POST", body }),
     );
@@ -244,7 +271,7 @@ export default function TemplateEditorPage() {
             </div>
             {editingId === step.id && (
               <div className={styles.editForm}>
-                <DraftFields draft={editDraft} setDraft={setEditDraft} />
+                <DraftFields draft={editDraft} setDraft={setEditDraft} activities={activities} />
                 <div className={styles.addRow}>
                   <button
                     className={styles.primary}
@@ -278,7 +305,7 @@ export default function TemplateEditorPage() {
       {isParent && (
         <form className={styles.addForm} onSubmit={addStep}>
           <h2 className={styles.subheading}>Add step</h2>
-          <DraftFields draft={addDraft} setDraft={setAddDraft} />
+          <DraftFields draft={addDraft} setDraft={setAddDraft} activities={activities} />
           <button
             className={styles.primary}
             disabled={busy || !addDraft.title.trim()}

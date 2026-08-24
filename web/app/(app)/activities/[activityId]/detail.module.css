@@ -1,0 +1,177 @@
+.back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.bigIcon {
+  font-size: 1.8rem;
+}
+
+.heading {
+  flex: 1;
+  margin: 0;
+  font-size: 1.35rem;
+  color: var(--accent);
+}
+
+.linkButton {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 0.9rem;
+}
+
+.skillTag,
+.contextTag {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.skillTag {
+  background: #e3efe9;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.contextTag {
+  background: #efe9dd;
+  color: #6b5b3a;
+}
+
+.description {
+  margin: 0 0 0.75rem;
+  white-space: pre-wrap;
+  line-height: 1.55;
+}
+
+.materials {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.actions > * {
+  flex: 1;
+}
+
+.runForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+  padding: 0.9rem;
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius);
+  background: #f2f7f5;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  background: var(--surface);
+  border: 1px solid #e0ddd5;
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.row > .input,
+.row > .primary,
+.row > .secondary {
+  flex: 1;
+}
+
+.input,
+.textarea {
+  font-size: 1rem;
+  font-family: inherit;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+  color: var(--text);
+  min-width: 0;
+}
+
+.iconInput {
+  width: 3.2rem;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 0.55rem 0.3rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+}
+
+.select {
+  font-size: 0.95rem;
+  padding: 0.55rem 0.5rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.primary {
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.7rem;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+}
+
+.secondary {
+  font-size: 0.95rem;
+  padding: 0.65rem;
+  border: 1px solid #cfccc3;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.flash {
+  margin-top: 0.8rem;
+  color: var(--ok);
+  font-weight: 600;
+}

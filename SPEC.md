@@ -415,6 +415,16 @@ Each phase lands as migrations + API + tests + UI, deployable at every phase bou
   quick-log.
 - **Phase 3 — The record.** Preferences with evidence & confidence decay, observations,
   ABC incidents, full quick-log hub, event timeline screen.
+- **Phase 3.5 — Activity library** (added on review: activities are designed
+  interventions, the "how" that goals will later pair with as the "what").
+  `Activity` definitions (title, icon, rich description, materials, skill tags,
+  context tags, typical duration, archivable); optional `activity_id` links on
+  routine steps and schedule items (copied through schedule generation);
+  `activity_run` events (context, 1–5 rating, note); library screen with search
+  and context-chip filtering, detail screen with edit / "We did this" / "Add to
+  today", how-to links from Today cards, activity picker in the routine step
+  editor, timeline rendering. Phase 2 will extend activities with links to the
+  objectives they exercise.
 - **Phase 4 — Insight.** Trend projections (mood/regulation/sleep lines, incident
   patterns, routine adherence), report generation & snapshot storage, print stylesheet,
   `projection_cache`, an authenticated full-export endpoint (JSON dump) to complement

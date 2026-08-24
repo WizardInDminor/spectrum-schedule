@@ -73,6 +73,9 @@ export default function LogPage() {
           </div>
 
           <nav className={styles.links}>
+            <Link href="/activities" className={styles.link}>
+              🎲 Activity library →
+            </Link>
             <Link href="/preferences" className={styles.link}>
               ❤️ Preference list →
             </Link>

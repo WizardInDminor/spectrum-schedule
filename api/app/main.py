@@ -1,6 +1,15 @@
 from fastapi import FastAPI
 
-from app.routers import auth, children, events, preferences, schedules, templates, users
+from app.routers import (
+    activities,
+    auth,
+    children,
+    events,
+    preferences,
+    schedules,
+    templates,
+    users,
+)
 
 app = FastAPI(title="Spectrum Schedule API", version="0.1.0")
 
@@ -12,6 +21,7 @@ for router in (
     schedules.router,
     events.router,
     preferences.router,
+    activities.router,
 ):
     app.include_router(router, prefix="/v1")
 
